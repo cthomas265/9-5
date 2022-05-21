@@ -86,18 +86,18 @@ const addDepartment = () => {
 
         inquirer.prompt([
             {
-                name: "name",
+                name: "department",
                 type: "input",
                 message: "What is the new department?"
             },
 
         ]).then (function (answer) {
-            connection.query('INSERT INTO department SET ?', {
-                department: answer.name,
+            connection.query('INSERT INTO departments SET ?', {
+                name: answer.department
             }, function (err) {
                 if (err) throw err;
                 console.log("Department added!");
-                work()
+                work();
             })
         })
     })
@@ -137,37 +137,40 @@ const addRole = () => {
     })
 }
 //update employee role - query map to employee first name, THEN in .then query role table, then map role titles, .then from first name to role title update role table where first name === prompt first name. like role_id and .then function
-// const updateEmployeeRole = () => {
-//     connection.query('SELECT * FROM roles', (err, res) => {
-//         if (err) throw err;
+const updateEmployeeRole = () => {
+    connection.query('SELECT * FROM roles', (err, res) => {
+        if (err) throw err;
 
-//         inquirer.prompt([
-//             {
-//                 name: "firstName",
-//                 type: "input",
-//                 message: "What is the employee's first name?",
-//                 answer: "first_name"
-//             },
-//             {
-//                 name: "role_id",
-//                 type: "list",
-//                 message: "What is the employee's new role?",
-//                 choices: res.map(role => role.title)
-//             }
-//         ]).then(function (answer) {
-//             const roleId = res.find(name => role.title === answer.role_id).id;
+        inquirer.prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "What is the employee's first name?",
+                answer: res.map(employee => employee.first_name)
+            },
+            {
+                name: "role_id",
+                type: "list",
+                message: "What is the employee's new role?",
+                choices: res.map(role => role.title)
+            }
+        ]).then(function (answer) {
+            const roleId = res.find(role => role.title === answer.role_id).id;
 
-//             connection.query('UPDATE employee ? WHERE ?',{
-//                     first_name: answer.firstName,
-//                     role_id: roleId
-//             },function (err) {
-//                 if (err) throw err;
-//                 console.log("Employee role updated!");
-//                 work();
-//             })
-//         })
-//     })
-// }
+            connection.query('UPDATE employees SET ? WHERE ?', [{
+                    role_id: roleId
+                },
+                {
+                    first_name: answer.firstName
+                }
+            ], function (err) {
+                if (err) throw err;
+                console.log("Role updated!");
+                work();
+            })
+        })
+    })
+}
 
 
 const addEmployee = () => {
