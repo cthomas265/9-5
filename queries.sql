@@ -4,7 +4,7 @@ INSERT INTO departments (name)
 
 VALUES
     ('Engineering'),
-    ('Marketing'),
+    ('Marketing'), 
     ('Sales'),
     ('Human Resources');
 

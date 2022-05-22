@@ -22,6 +22,9 @@ const work = () => {
                 "Add a new role",
                 "Add a new employee",
                 "Update employee role",
+                "Delete Department",
+                "Delete Role",
+                "Delete Employee",
                 "Exit"
             ]
         }])
@@ -47,6 +50,15 @@ const work = () => {
                     break;
                 case "Update employee role":
                     updateEmployeeRole();
+                    break;
+                case "Delete Department":
+                    deleteDepartment();
+                    break;
+                case "Delete Role":
+                    deleteRole();
+                    break;
+                case "Delete Employee":
+                    deleteEmployee();
                     break;
                 case "exit":
                     connection.end();
@@ -136,7 +148,7 @@ const addRole = () => {
         })
     })
 }
-//update employee role - query map to employee first name, THEN in .then query role table, then map role titles, .then from first name to role title update role table where first name === prompt first name. like role_id and .then function
+
 const updateEmployeeRole = () => {
     connection.query('SELECT * FROM roles', (err, res) => {
         if (err) throw err;
@@ -172,7 +184,6 @@ const updateEmployeeRole = () => {
     })
 }
 
-
 const addEmployee = () => {
     connection.query('SELECT * FROM roles', (err, res) => {
         if (err) throw err;
@@ -207,6 +218,80 @@ const addEmployee = () => {
             }, function (err) {
                 if (err) throw err;
                 console.log("Employee added!");
+                work();
+            })
+        })
+    })
+}
+
+const deleteDepartment = () => {
+    connection.query('SELECT * FROM departments', (err, res) => {
+        if (err) throw err;
+
+        inquirer.prompt([
+            {
+                name: "department",
+                type: "input",
+                message: "What department would you like to delete?",
+                answer: res.map(department => department.name)
+            }
+        ]).then(function (answer) {
+            connection.query('DELETE FROM departments WHERE ?', {
+                name: answer.department
+            }, function (err) {
+                if (err) throw err;
+                console.log("Department successfully deleted!");
+                work();
+            })
+        })
+    })
+}
+
+const deleteRole = () => {
+    connection.query('SELECT * FROM roles', (err, res) => {
+        if (err) throw err;
+
+        inquirer.prompt([
+            {name: 'roles',
+            type: 'input',
+            message: 'What role would you like to delete?',
+            answer: res.map(roles => roles.title)
+            }
+        ]).then(function(answer) {
+            connection.query('DELETE FROM roles WHERE ?', {
+                title: answer.roles
+            }, function(err) {
+                if (err) throw err;
+                console.log("Role successfully deleted!");
+                work();
+            })
+        })
+    })
+}
+
+const deleteEmployee = () => {
+    connection.query('SELECT * FROM employees', (err, res) => {
+        if (err) throw err;
+
+        inquirer.prompt([
+            {
+                name: "first_name",
+                type: "input",
+                message: "What is the employee's first name?",
+                answer: res.map(employee => employee.first_name)
+            },
+            {
+                name: "last_name",
+                type: "input",
+                message: "What is the employee's last name?",
+                answer: res.map(employee => employee.last_name)
+            }
+        ]).then(function (answer) {
+            connection.query('DELETE FROM employees WHERE ?', {
+                first_name: answer.first_name
+            }, function (err) {
+                if (err) throw err;
+                console.log("Employee succesfully deleted!");
                 work();
             })
         })
